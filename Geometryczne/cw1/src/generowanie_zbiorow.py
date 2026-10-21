@@ -34,7 +34,7 @@ def generate_setC(N=1000, r=100.0, save=True, seed=16):
     return points
 
 
-# Generowanie zbioru D
+# Generowanie zbioru D (równanie kierunkowe: y = 0.05x + 0.05)
 def generate_setD(N=1000, save=True, seed=16):
     np.random.seed(seed)
     x = np.random.uniform(-1000.0, 1000.0, size=N)
@@ -43,3 +43,19 @@ def generate_setD(N=1000, save=True, seed=16):
     if save:
         np.savetxt(POINTS_DIR / "setD_points.csv", points, delimiter=",")
     return points
+
+
+# Generowanie zbioru D za pomocą równania parametrycznego wektora: P(t) = a + t * (b - a)
+def generate_setD_parametric(N=1000, save=True, seed=16):
+    np.random.seed(seed)
+    # Dla a = [-1.0, 0.0] i b = [1.0, 0.1]:
+    # b - a = [2.0, 0.1]
+    # Losujemy t z przedziału [-500, 500], aby x = -1 + 2t leżało w [-1001, 999]
+    t = np.random.uniform(-500.0, 500.0, size=N)
+    x = -1.0 + 2.0 * t
+    y = 0.0 + 0.1 * t
+    points = np.column_stack((x, y))
+    if save:
+        np.savetxt(POINTS_DIR / "setD_param_points.csv", points, delimiter=",")
+    return points
+
