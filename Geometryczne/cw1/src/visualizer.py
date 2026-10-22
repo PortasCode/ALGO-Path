@@ -139,12 +139,7 @@ def plot_all_classified_datasets(datasets, eps=1e-10):
     save_path = FIGURES_DIR / "classified_datasets.png"
     plt.savefig(save_path, dpi=400)
     plt.close()
-    print(f"[WYKRES] Zapisano z wolną przestrzenią (legenda u góry): {save_path}")
-
-
-def plot_differences_set_d(points_d):
-    """Pozostawione jako funkcja pomocnicza w kodzie źródłowym."""
-    pass
+    print(f"[WYKRES] Zapisano klasyfikację zbiorów (400 DPI): {save_path}")
 
 
 def plot_set_b_anomalies(points_b, disputed_indices):
@@ -170,9 +165,10 @@ def plot_set_b_anomalies(points_b, disputed_indices):
     x_span = np.array([-1e14, 1e14])
     ax.plot(x_span, 0.05 * x_span + 0.05, color=COLOR_LINE, linestyle="--", linewidth=1.5, label="Prosta AB", zorder=2)
 
+    # Większe odstępy dla etykiet, aby były odsunięte od punktów i nie zasłaniały wykresu
     label_offsets = {
-        0: (3.2e13, 2.6e13),
-        1: (3.2e13, -3.8e13),
+        0: (3.5e13, 3.0e13),
+        1: (3.5e13, -4.5e13),
     }
 
     for i, idx in enumerate(disputed_indices):
@@ -183,21 +179,20 @@ def plot_set_b_anomalies(points_b, disputed_indices):
         ax.scatter(
             pt[0],
             pt[1],
-            s=260,
+            s=280,
             color="#e31a1c",
             marker="*",
             edgecolor="black",
-            linewidth=1.4,
+            linewidth=1.6,
             zorder=6,
-            label="Punkt sporny (det_2x2 = 0.0)" if i == 0 else None,
+            label="Punkt sporny (błędne det_2x2 = 0.0)" if i == 0 else None,
         )
 
         dx, dy = label_offsets.get(i, (2e13, 2e13))
         text_content = (
             f"PUNKT #{idx}\n"
-            f"X = {pt[0]:.6e}\n"
-            f"Y = {pt[1]:.6e}\n"
-            f"det_2x2 = {d2:.1f} (ON)\n"
+            f"X = {pt[0]:.4e}, Y = {pt[1]:.4e}\n"
+            f"det_2x2 = {d2:.1f} (Błędnie: ON)\n"
             f"det_3x3 = {d3:.2e} ({'LEWO' if d3 > 0 else 'PRAWO'})"
         )
 
@@ -208,29 +203,29 @@ def plot_set_b_anomalies(points_b, disputed_indices):
             arrowprops=dict(
                 facecolor="black",
                 edgecolor="black",
-                shrink=0.08,
-                width=1.5,
-                headwidth=8,
-                headlength=8,
+                shrink=0.1,
+                width=2.0,
+                headwidth=10,
+                headlength=10,
             ),
-            fontsize=10.5,
+            fontsize=12,
             fontweight="bold",
             fontfamily="monospace",
             bbox=dict(
-                boxstyle="round,pad=0.7",
+                boxstyle="round,pad=0.8",
                 facecolor="white",
                 edgecolor="#b2182b",
                 alpha=0.98,
-                linewidth=1.6,
+                linewidth=2.0,
             ),
             zorder=7,
         )
 
-    ax.set_xlabel("Współrzędna X (skala 10^14)", fontsize=12.5)
-    ax.set_ylabel("Współrzędna Y (skala 10^14)", fontsize=12.5)
-    ax.set_title("Punkty z fałszywym det=0: mimo odległości bilionów jednostek zakwalifikowane jako leżące na prostej", fontsize=12.5, pad=10)
+    ax.set_xlabel("Współrzędna X (skala 10^14)", fontsize=13)
+    ax.set_ylabel("Współrzędna Y (skala 10^14)", fontsize=13)
+    ax.set_title("Fałszywie oznaczone punkty na prostej w Zbiorze B", fontsize=14, fontweight="bold", pad=12)
     ax.grid(True)
-    ax.legend(loc="upper left", fontsize=11, framealpha=0.95)
+    ax.legend(loc="upper left", fontsize=11.5, framealpha=0.95)
 
     plt.tight_layout()
     save_path = FIGURES_DIR / "set_b_anomalies.png"
@@ -263,11 +258,11 @@ def plot_benchmark_chart(benchmark_df):
             label=f"Metoda: {method}",
         )
 
-    ax.set_xlabel("Liczba punktów (N)", fontsize=12.5)
-    ax.set_ylabel("Czas wykonania [sekundy]", fontsize=12.5)
-    ax.set_title("Narzut wywołań biblioteki NumPy w pętli vs czysta arytmetyka w Pythonie", fontsize=12.5, pad=10)
+    ax.set_xlabel("Liczba punktów (N)", fontsize=13)
+    ax.set_ylabel("Czas wykonania [sekundy]", fontsize=13)
+    ax.set_title("Porównanie efektywności czasowej wyznaczników", fontsize=14, fontweight="bold", pad=12)
     ax.grid(True)
-    ax.legend(loc="upper left", fontsize=11.5, framealpha=0.95)
+    ax.legend(loc="upper left", fontsize=12, framealpha=0.95)
 
     plt.tight_layout()
     save_path = FIGURES_DIR / "benchmark_times.png"

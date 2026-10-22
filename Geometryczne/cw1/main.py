@@ -15,10 +15,10 @@ def analyze_set_b_disputed(points_b, disputed_indices):
     print("SZCZEGÓŁOWA ANALIZA SPORNYCH PUNKTÓW ZE ZBIORU B (Uwaga szczegółowa 3)")
     print("=" * 70)
 
-    # Przeskalowany wektor prostej (mnożymy współrzędne przez 10^14)
+    # Punkty prostej leżące na TEJ SAMEJ prostej y = 0.05x + 0.05, ale w skali 10^14
     scale = 1e14
-    a_scaled = [A_POINT[0] * scale, A_POINT[1] * scale]
-    b_scaled = [B_POINT[0] * scale, B_POINT[1] * scale]
+    a_scaled = [-scale, 0.05 * (-scale) + 0.05]
+    b_scaled = [scale, 0.05 * scale + 0.05]
 
     for idx in disputed_indices:
         pt = points_b[idx]
@@ -73,10 +73,9 @@ def main():
         analyze_set_b_disputed(datasets["B"], disputed_indices_b)
 
     # 4. Generowanie wszystkich wykresów do sprawozdania
-    print("\n[KROK 3] Generowanie wykresów do sprawozdania (jakość 300 DPI w folderze figures/)...")
+    print("\n[KROK 3] Generowanie wykresów do sprawozdania (wysoka rozdzielczość 400 DPI w folderze figures/)...")
     vis.draw_all_datasets(datasets["A"], datasets["B"], datasets["C"], datasets["D_kier"])
     vis.plot_all_classified_datasets(datasets, eps=1e-10)
-    vis.plot_differences_set_d(datasets["D_kier"])
     if len(disputed_indices_b) > 0:
         vis.plot_set_b_anomalies(datasets["B"], disputed_indices_b)
 
@@ -88,7 +87,7 @@ def main():
     print("\n" + "=" * 70)
     print("PROCES ZAKOŃCZONY SUKCESEM!")
     print("Wszystkie dane liczbowe (classifier_results.csv, benchmark_results.csv)")
-    print("oraz wszystkie 5 wykresów (w folderze figures/) są gotowe do wklejenia do sprawozdania.")
+    print("oraz wszystkie 4 wykresy (w folderze figures/) są gotowe do wklejenia do sprawozdania.")
     print("=" * 70)
 
 

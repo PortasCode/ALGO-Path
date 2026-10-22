@@ -46,20 +46,19 @@ def classify_dataset(points, a, b, det_func, eps=0.0, dtype=np.float64):
 
 def count_categories(labels):
     """
-    Zlicza, ile punktów trafiło do poszczególnych kategorii.
+    Zlicza liczbę punktów w poszczególnych kategoriach orientacji.
 
     Parametry:
       labels : tablica etykiet (1 = lewo, -1 = prawo, 0 = na prostej)
 
     Zwraca:
-      słownik np. {"left": X, "right": Y, "collinear": Z}
+      słownik z podziałem: {"left": int, "right": int, "on": int}
     """
-    slownik = {}
-    slownik["left"] = np.sum(labels == 1)
-    slownik["right"] = np.sum(labels == -1)
-    slownik["on"] = np.sum(labels == 0)
-
-    return slownik
+    return {
+        "left": int(np.sum(labels == 1)),
+        "right": int(np.sum(labels == -1)),
+        "on": int(np.sum(labels == 0)),
+    }
 
 
 def find_differences(labels_1, labels_2):

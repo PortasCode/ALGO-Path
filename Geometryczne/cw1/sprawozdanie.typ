@@ -137,7 +137,7 @@ Do wyznaczenia wartości $D$ zastosowano cztery procedury obliczeniowe:
 == 2.3. Wpływ arytmetyki IEEE 754 i rola parametru $epsilon$
 W komputerowej reprezentacji liczb zmiennoprzecinkowych mantysa ma ograniczoną pojemność bitową: format `float32` zapewnia około 7 dziesiętnych cyfr znaczących, natomiast `float64` około 16 cyfr.
 
-Gdy operujemy na współrzędnych o dużych rzędach wielkości (np. $10^(14)$), odejmowanie bliskich sobie liczb prowadzi do zjawiska *eliminacji katastrofalnej*. Wiodące cyfry ulegają wyzerowaniu, a wynik zostaje zdominowany przez błędy zaokrągleń, co w formacie `float32` skutkuje powstaniem fałszywego zera maszynowego. Wprowadzenie progu tolerancji $epsilon$ pozwala odróżnić rzeczywiste odchylenia geometryczne od naturalnych fluktuacji numerycznych maszyny.
+Gdy operujemy na współrzędnych o dużych rzędach wielkości (np. $10^(14)$), odejmowanie bliskich sobie liczb prowadzi do zjawiska *eliminacji katastrofalnej*. Wiodące cyfry ulegają wyzerowaniu, a wynik zostaje zdominowany przez błędy zaokrągleń, co w formacie `float32` skutkuje powstaniem fałszywego zera maszynowego. Wprowadzenie progu tolerancji $epsilon$ pozwala odróżnić rzeczywiste odchylenia geometryczne od drobnych błędów zaokrągleń komputera.
 
 #pagebreak()
 
@@ -154,11 +154,11 @@ $ y = 0.05 x + 0.05 $
 
 == 3.2. Specyfikacja zbiorów punktów
 W ramach laboratorium wygenerowano pięć niezależnych zbiorów punktów:
-- *Zestaw A ($10^5$ punktów):* Rozkład jednostajny ciągły w obszarze $[-1000, 1000]^2$. Odpowiada typowym danym inżynierskim.
-- *Zestaw B ($10^5$ punktów):* Rozkład jednostajny w skrajnym obszarze $[-10^(14), 10^(14)]^2$, prowokujący błędy niedomiaru mantysy.
+- *Zestaw A ($10^5$ punktów):* Rozkład jednostajny w obszarze $[-1000, 1000]^2$.
+- *Zestaw B ($10^5$ punktów):* Rozkład jednostajny w obszarze $[-10^(14), 10^(14)]^2$.
 - *Zestaw C ($10^3$ punktów):* Punkty na okręgu o środku $S=(0,0)$ i promieniu $R=100$, wyznaczane równaniem $x = R cos theta, y = R sin theta$ dla $theta in [0, 2 pi)$.
 - *Zestaw D — wersja kierunkowa ($10^3$ punktów):* Punkty leżące matematycznie na prostej, generowane wzorem $y = 0.05x + 0.05$ dla $x in [-1000, 1000]$.
-- *Zestaw D — wersja parametryczna ($10^3$ punktów):* Punkty generowane równaniem parametrycznym dla $t in [-500, 500]$, co daje współrzędne $x = -1 + 2t$ oraz $y = 0.1t$.
+- *Zestaw D — wersja parametryczna ($10^3$ punktów):* Punkty generowane równaniem parametrycznym dla $t in [-500, 500]$, wyznaczającym współrzędne: $x = -1 + 2t$ oraz $y = 0.1t$.
 
 == 3.3. Parametry eksperymentów
 Każdy zestaw punktów przebadano dla pełnego iloczynu kartezjańskiego:
@@ -191,7 +191,7 @@ Na Rysunku 1 przedstawiono rozkład przestrzenny punktów w czterech podstawowyc
 // STRONA 5: WIZUALIZACJA KLASYFIKACJI I ZBIORY A, C
 // ==========================================
 == 4.2. Wizualizacja klasyfikacji punktów
-Na Rysunku 2 zilustrowano podział punktów na kategorie orientacji (Lewo, Prawo, Na prostej) wyznaczony przez prostą $A B$ dla metody `custom_2x2` z progiem $epsilon = 10^(-10)$. Wspólna legenda została umieszczona na samej górze figury, nie zasłaniając punktów na żadnym z wykresów.
+Na Rysunku 2 zilustrowano podział punktów na kategorie orientacji (Lewo, Prawo, Na prostej) wyznaczony przez prostą $A B$ dla metody `custom_2x2` z progiem $epsilon = 10^(-10)$.
 
 #v(4pt)
 #align(center)[
@@ -222,24 +222,24 @@ W tabeli 1 zestawiono wyniki klasyfikacji uzyskane dla zbiorów A i C. Wyniki te
 ]
 
 *Wnioski z analizy zbiorów standardowych:*
-Dla typowych skal inżynierskich ($[-1000, 1000]$), gdy punkty leżą w bezpiecznej odległości od prostej bazowej, wybór metody wyznacznika oraz precyzji nie wpływa na poprawność geometryczną. Wyniki są w pełni stabilne.
+Dla skal ($[-1000, 1000]$), gdy punkty leżą w bezpiecznej odległości od prostej bazowej, wybór metody wyznacznika oraz precyzji nie wpływa na poprawność geometryczną.
 
 #pagebreak()
 
 // ==========================================
 // STRONA 6: ZBIÓR B (SKALA 10^14)
 // ==========================================
-== 4.4. Zbiór B: Analiza anomalii i fałszywej współliniowości w skali $10^(14)$
-Zbiór B ($10^5$ punktów o współrzędnych rzędu $10^(14)$) ukazuje krytyczne ograniczenia arytmetyki zmiennoprzecinkowej.
+== 4.4. Zbiór B: Fałszywie oznaczone punkty na prostej
+W Zbiorze B ($10^5$ punktów o współrzędnych rzędu $10^(14)$) pojawia się problem fałszywego uznawania punktów za leżące na prostej.
 
 #v(4pt)
 #align(center)[
-  #image("figures/set_b_anomalies.png", width: 85%)
+  #image("figures/set_b_anomalies.png", width: 53%)
   #v(2pt)
-  #text(size: 9pt, style: "italic")[Rysunek 3: Fałszywa współliniowość w Zbiorze B (skala 10^14) z zaznaczeniem współrzędnych punktów spornych.]
+  #text(size: 9pt, style: "italic")[Rysunek 3: Fałszywie oznaczone punkty na prostej w Zbiorze B]
 ]
 
-#v(4pt)
+#v(1pt)
 #align(center)[
 #table(
   columns: (1.5fr, 1.1fr, 1.1fr, 1fr, 1fr, 1.2fr, 1.2fr),
@@ -264,11 +264,14 @@ Zbiór B ($10^5$ punktów o współrzędnych rzędu $10^(14)$) ukazuje krytyczne
 ]
 
 *Analiza anomalii w Zbiorze B:*
-1. *Całkowite załamanie `float32`:* W formule $2 times 2$ odjęcie małej współrzędnej punktu prostej od liczby rzędu $10^(14)$ powoduje utratę precyzji w 24-bitowej mantysie. Obie różnice stają się numerycznie równe, dając wyznacznik $0.0$ dla całego zbioru ($100%$ fałszywych współliniowości).
-2. *Punkty sporne w precyzji `float64`:* Program zidentyfikował dwa punkty (nr 29771 oraz 66235), dla których `custom_2x2` zwrócił dokładnie $0.0$, podczas gdy `custom_3x3` dał wyznacznik rzędu $10^(10)$:
-  - *Punkt nr 29771:* $X = -6.693852 times 10^(13), quad Y = -3.356299 times 10^(12)$
-  - *Punkt nr 66235:* $X = -9.701155 times 10^(13), quad Y = -4.800051 times 10^(12)$
-  Po przeskalowaniu wektora prostej o czynnik $10^(14)$ oba algorytmy uzyskały identyczną wartość $D approx -10^(27)$ (zgodna klasyfikacja: Prawo). Świadczy to o tym, że błąd wynikał wyłącznie z gigantycznej dysproporcji skali wektora bazowego i badanego punktu.
+1. *Całkowite załamanie formatu `float32`:* W formule $2 times 2$ odejmowanie małych współrzędnych punktów bazowych od liczb rzędu $10^(14)$ sprawia, że małe wartości gubią się w zaokrągleniach 24-bitowej mantysy. W efekcie dla komputera obie różnice są identyczne, co daje wyznacznik $0.0$ dla wszystkich 100 000 punktów ($100%$ fałszywych współliniowości).
+2. *Punkty sporne w precyzji `float64`:* Przy braku tolerancji ($epsilon = 0.0$) algorytmy dały sprzeczne wyniki dla dwóch punktów:
+  - *Punkt nr 29771:* $X = -6.69 times 10^(13), Y = -3.36 times 10^(12)$. Formuła `custom_2x2` zwróciła dokładnie $0.0$ (błędnie: Na prostej), podczas gdy `custom_3x3` zwróciła wartość ujemną (Prawo).
+  - *Punkt nr 66235:* $X = -9.70 times 10^(13), Y = -4.80 times 10^(12)$. Formuła `custom_3x3` zwróciła wartość dodatnią (Lewo).
+  
+  *Weryfikacja ręczna:* Podstawienie współrzędnych do równania prostej $y = 0.05x + 0.05$ jednoznacznie wykazuje, że punkty te leżą daleko od prostej: Punkt 29771 leży pod prostą (rzeczywista strona: Prawo), natomiast Punkt 66235 leży nad prostą (rzeczywista strona: Lewo).
+  
+  *Wpływ przeskalowania punktów prostej:* Gdy punkty bazowe wyznaczymy na tej samej prostej, ale w skali odpowiadającej badanym danym ($A = [-10^(14), -5 dot 10^(12) + 0.05], B = [10^(14), 5 dot 10^(12) + 0.05]$), błąd fałszywej współliniowości całkowicie znika. Obie metody uzyskują zgodne orzeczenia odpowiadające prawdzie geometrycznej (Punkt 29771: Prawo, Punkt 66235: Lewo).
 
 #pagebreak()
 
@@ -276,44 +279,42 @@ Zbiór B ($10^5$ punktów o współrzędnych rzędu $10^(14)$) ukazuje krytyczne
 // STRONA 7: ZBIÓR D (PUNKTY WSPÓŁLINIOWE)
 // ==========================================
 == 4.5. Zbiór D: Błędy klasyfikacji na punktach współliniowych
-W Zbiorze D każdy z $1000$ punktów leży matematycznie dokładnie na prostej $A B$. Prawidłowy wynik w idealnej arytmetyce to wyłącznie etykieta Na prostej.
-
-Poniższa tabela przedstawia zachowanie klasyfikatorów w zależności od doboru tolerancji $epsilon$ oraz typu danych.
+W Zbiorze D każdy z $1000$ punktów leży matematycznie dokładnie na prostej $A B$. Prawidłowy wynik w idealnej arytmetyce to wyłącznie etykieta "Na prostej".
 
 #v(8pt)
 #align(center)[
 #table(
-  columns: (1.5fr, 1.1fr, 1.1fr, 1.1fr, 1.1fr, 1.3fr),
-  align: (left, center, center, right, right, right),
+  columns: (0.8fr, 1.4fr, 1.1fr, 1.1fr, 1.1fr, 1.1fr, 1.2fr),
+  align: (center, left, center, center, right, right, right),
   stroke: none,
   table.hline(stroke: 1.2pt),
-  [*Metoda*], [*Precyzja*], [*$epsilon$*], [*Lewo*], [*Prawo*], [*Na prostej*],
+  [*Część*], [*Metoda*], [*Precyzja*], [*$epsilon$*], [*Lewo*], [*Prawo*], [*Na prostej*],
   table.hline(stroke: 0.6pt),
-  [custom_3x3], [float64], [0.0], [178], [405], [*417*],
-  [custom_2x2], [float64], [0.0], [156], [156], [*688*],
-  [numpy_3x3], [float64], [0.0], [453], [545], [*2*],
-  [numpy_2x2], [float64], [0.0], [503], [497], [*0*],
+  [(I)], [custom_3x3], [float64], [0.0], [178], [405], [*417*],
+  [(I)], [custom_2x2], [float64], [0.0], [156], [156], [*688*],
+  [(I)], [numpy_3x3], [float64], [0.0], [453], [545], [*2*],
+  [(I)], [numpy_2x2], [float64], [0.0], [503], [497], [*0*],
   table.hline(stroke: 0.3pt),
-  [custom_3x3], [float64], [$10^(-14)$], [0], [0], [*1 000*],
-  [custom_2x2], [float64], [$10^(-14)$], [147], [147], [*706*],
-  [numpy_3x3], [float64], [$10^(-10)$], [0], [0], [*1 000*],
-  [numpy_2x2], [float64], [$10^(-10)$], [0], [0], [*1 000*],
+  [(II)], [custom_3x3], [float64], [$10^(-14)$], [0], [0], [*1 000*],
+  [(II)], [custom_2x2], [float64], [$10^(-14)$], [147], [147], [*706*],
+  [(II)], [numpy_3x3], [float64], [$10^(-10)$], [0], [0], [*1 000*],
+  [(II)], [numpy_2x2], [float64], [$10^(-10)$], [0], [0], [*1 000*],
   table.hline(stroke: 0.3pt),
-  [custom_3x3], [float32], [0.0], [298], [315], [*387*],
-  [custom_2x2], [float32], [0.0], [163], [175], [*662*],
-  [numpy_3x3], [float32], [0.0], [489], [511], [*0*],
-  [numpy_2x2], [float32], [0.0], [513], [487], [*0*],
+  [(III)], [custom_3x3], [float32], [0.0], [298], [315], [*387*],
+  [(III)], [custom_2x2], [float32], [0.0], [163], [175], [*662*],
+  [(III)], [numpy_3x3], [float32], [0.0], [489], [511], [*0*],
+  [(III)], [numpy_2x2], [float32], [0.0], [513], [487], [*0*],
   table.hline(stroke: 1.2pt)
 )
 #v(2pt)
-#text(size: 8.5pt, style: "italic")[Tabela 3: Wyniki kategoryzacji punktów Zbioru D (wariant kierunkowy).]
+#text(size: 8.5pt, style: "italic")[Tabela 3: Wyniki kategoryzacji punktów Zbioru D z podziałem na warianty analityczne (I, II, III).]
 ]
 
 #v(10pt)
-*Szczegółowa analiza wyników Zbioru D:*
-1. *Brak tolerancji ($epsilon = 0.0$):* Komputer orzeka poprawną współliniowość zaledwie dla części punktów: 688 w metodzie `custom_2x2`, 417 w `custom_3x3` oraz zaledwie 0--2 punktów w funkcjach biblioteki NumPy. Wynika to z faktu, że współczynnik prostej $0.05$ jest w systemie dwójkowym ułamkiem nieskończonym okresowym, co przy obliczeniach wyznacznika generuje resztki rzędu $10^(-16)$.
-2. *Przyczyna rozbieżności między 3x3 a 2x2:* Obie metody wykonują odmienną sekwencję operacji zmiennoprzecinkowych. W formule 3x3 występuje 6 mnożeń pełnych współrzędnych, podczas gdy w 2x2 najpierw odejmowane są współrzędne punktów. Daje to przeciwne znaki resztek wyznacznika, prowadząc do aż 677 sprzecznych decyzji klasyfikatora przy $epsilon = 0$.
-3. *Stabilizacja progiem tolerancji:* Wprowadzenie progu $epsilon = 10^(-10)$ całkowicie niweluje wpływ fluktuacji mantysy, przywracając $100%$ poprawnych orzeczeń (dokładnie $1000$ punktów na prostej) dla wszystkich badanych algorytmów w precyzji `float64`.
+*Szczegółowa analiza wyników Zbioru D (odniesienie do części tabeli):*
+- *(I) Brak tolerancji ($epsilon = 0.0$):* Komputer uznaje za współliniowe zaledwie część punktów: 688 w metodzie `custom_2x2`, 417 w `custom_3x3` oraz zaledwie 0--2 punktów w funkcjach biblioteki NumPy. Wynika to z faktu, że współczynnik prostej $0.05$ jest ułamkiem nieskończonym w systemie dwójkowym, co generuje reszty rzędu $10^(-16)$. Porównanie wyników punkt po punkcie między `custom_3x3` a `custom_2x2` wykazuje aż *677 sprzecznych decyzji* (dla 677 punktów z 1000 algorytmy wskazały inną stronę, np. jedna metoda uznała punkt za współliniowy, a druga za leżący po lewej lub prawej stronie, co wynika z odmiennej kolejności działań arytmetycznych).
+- *(II) Działanie progu tolerancji ($epsilon > 0$):* Wprowadzenie progu $epsilon = 10^(-10)$ całkowicie niweluje wpływ drobnych błędów zaokrągleń komputera, przywracając $100%$ poprawnych orzeczeń (dokładnie $1000$ punktów na prostej) dla wszystkich badanych algorytmów w precyzji `float64`.
+- *(III) Wpływ pojedynczej precyzji `float32`:* Format 32-bitowy dysponuje zaledwie 24 bitami mantysy (ok. 7 cyfr dziesiętnych znaczących). Dla współrzędnych z przedziału $[-1000, 1000]$ odstęp między sąsiednimi liczbami maszynowymi jest znacznie większy niż w podwójnej precyzji. W funkcjach biblioteki NumPy drobne zaburzenia numeryczne sprawiają, że wyznacznik nigdy nie osiąga idealnego zera — bez tolerancji ($epsilon = 0.0$) zbiór zostaje niemal symetrycznie podzielony na stronę lewą i prawą (ok. 50% lewo, 50% prawo: 489/511 i 513/487), dając *0 punktów na prostej*. Metody autorskie `custom_2x2` (662) oraz `custom_3x3` (387) wykazują częściowe orzeczenia zerowe, ponieważ bezpośrednie odejmowanie częściej generuje identyczne bity w rejestrach, które po odjęciu dają dokładnie $0.0$. Ponadto w `float32` próg $epsilon = 10^(-10)$ jest bezużyteczny (leży poniżej rozdzielczości typu) — aby skompensować błędy zaokrągleń, wymagany byłby znacznie większy próg ($epsilon >= 10^(-4)$).
 
 #pagebreak()
 
@@ -321,7 +322,7 @@ Poniższa tabela przedstawia zachowanie klasyfikatorów w zależności od doboru
 // STRONA 8: BENCHMARK WYDAJNOŚCIOWY
 // ==========================================
 == 4.6. Porównanie efektywności czasowej (Benchmark)
-Przeprowadzono pomiar czasu klasyfikacji za pomocą `time.perf_counter()` dla rozmiarów próby $N in {1 000, 10 000, 50 000, 100 000}$.
+Przeprowadzono pomiar czasu klasyfikacji za pomocą `time.perf_counter()` dla rozmiarów próby $N in {1_000, 10_000, 50_000, 100_000}$.
 
 #v(6pt)
 #align(center)[
@@ -339,10 +340,10 @@ Przeprowadzono pomiar czasu klasyfikacji za pomocą `time.perf_counter()` dla ro
   table.hline(stroke: 1.2pt),
   [*Rozmiar próby $N$*], [*custom_2x2*], [*custom_3x3*], [*numpy_2x2*], [*numpy_3x3*],
   table.hline(stroke: 0.6pt),
-  [1 000], [0.49 ms], [0.56 ms], [1.83 ms], [1.91 ms],
-  [10 000], [4.84 ms], [5.65 ms], [18.19 ms], [18.84 ms],
-  [50 000], [23.91 ms], [26.96 ms], [88.12 ms], [91.88 ms],
-  [100 000], [48.52 ms], [55.41 ms], [179.15 ms], [186.06 ms],
+  [1_000], [0.49 ms], [0.56 ms], [1.83 ms], [1.91 ms],
+  [10_000], [4.84 ms], [5.65 ms], [18.19 ms], [18.84 ms],
+  [50_000], [23.91 ms], [26.96 ms], [88.12 ms], [91.88 ms],
+  [100_000], [48.52 ms], [55.41 ms], [179.15 ms], [186.06 ms],
   table.hline(stroke: 1.2pt)
 )
 #v(2pt)
@@ -350,7 +351,7 @@ Przeprowadzono pomiar czasu klasyfikacji za pomocą `time.perf_counter()` dla ro
 ]
 
 *Wnioski z analizy wydajnościowej:*
-1. Implementacje autorskie (`custom_*`) okazały się *3.4–3.8 raza szybsze* od wywołań biblioteki NumPy w pętli. Dla $10^5$ punktów `custom_2x2` wykonuje się w $48.5$ ms, podczas gdy `numpy_3x3` wymaga $186.1$ ms.
+1. Implementacje autorskie (`custom_*`) okazały się *3.4–3.8 raza szybsze* od wywołań biblioteki NumPy w pętli. Dla $100_000$ punktów `custom_2x2` wykonuje się w $48.5$ ms, podczas gdy `numpy_3x3` wymaga $186.1$ ms.
 2. Narzut NumPy wynika z wywoływania funkcji w pętli `for` interpretera Pythona — koszt alokacji obiektów macierzy przewyższa czas samej dekompozycji.
 3. Wszystkie metody wykazują stabilną złożoność liniową $O(N)$.
 
@@ -361,20 +362,19 @@ Przeprowadzono pomiar czasu klasyfikacji za pomocą `time.perf_counter()` dla ro
 // ==========================================
 = 5. Wnioski końcowe
 
-Na podstawie 240 przeprowadzonych prób laboratoryjnych sformułowano następujące syntetyczne wnioski inżynierskie:
+Na podstawie przeprowadzonych eksperymentów sformułowano następujące wnioski:
 
 1. *Niewystarczalność formatu `float32`:*
-   Pojedyncza precyzja zmiennoprzecinkowa (23 bity mantysy, ok. 7 cyfr znaczących) jest całkowicie nieodpowiednia do obliczeń geometrycznych w zagadnieniach o szerokim zakresie współrzędnych ($>= 10^7$). Prowadzi to do zjawiska eliminacji katastrofalnej, w którym małe współrzędne prostej są „pochłaniane” przez duże liczby, skutkując masowym orzekaniem fałszywej współliniowości ($100%$ błędu w Zbiorze B).
+   Pojedyncza precyzja (ok. 7 cyfr znaczących) nie nadaje się do obliczeń geometrycznych przy dużych współrzędnych ($>= 10^7$). Dochodzi wtedy do utraty cyfr znaczących przy odejmowaniu dużych liczb od siebie — małe współrzędne prostej są całkowicie „pochłaniane” przez duże liczby punktu, co skutkuje masowym orzekaniem fałszywej współliniowości (aż $100%$ błędu w Zbiorze B).
 
 2. *Porównanie formuły różnicowej $2 times 2$ z formułą pełną $3 times 3$:*
-   W typowej skali inżynierskiej (Zbiór D) metoda $2 times 2$ wykazuje wyższą precyzję dzięki wstępnemu odejmowaniu współrzędnych, co redukuje rząd wielkości iloczynów (688 trafień bez tolerancji wobec 417 dla metody 3x3). Jednak w przypadku skrajnych dysproporcji skali między punktami prostej a badanym punktem ($10^0$ vs $10^(14)$), odejmowanie niszczy informację o nachyleniu prostej, generując fałszywe zera maszynowe.
+   W zakresie współrzędnych (Zbiór D, od -1000 do 1000) wzór $2 times 2$ jest dokładniejszy dzięki wstępnemu odejmowaniu współrzędnych, co zapobiega powstawaniu wielkich iloczynów (688 punktów na prostej bez tolerancji wobec 417 dla metody 3x3). Jednak w przypadku skrajnych liczb ($10^(14)$), odejmowanie to potrafi zgubić nachylenie prostej, jeśli wektor bazowy nie zostanie odpowiednio dopasowany do rzędu wielkości punktów.
 
 3. *Konieczność stosowania progu tolerancji $epsilon$:*
-   W arytmetyce zmiennoprzecinkowej porównanie wyznacznika do zera maszynowego ($D == 0.0$) jest bezużyteczne w praktyce inżynierskiej. Dla Zbioru D brak tolerancji odrzucił od $31%$ do aż $100%$ punktów faktycznie leżących na prostej z powodu fluktuacji rzędu $10^(-16)$. Dobór bezpiecznego progu $epsilon = 10^(-10)$ dla danych rzędu $10^3$ przywrócił pełną $100%$ bezbłędność klasyfikacji we wszystkich badanych metodach.
+   Sprawdzanie idealnego zera ($D == 0.0$) w komputerze prowadzi w praktyce do błędnych wniosków. Dla Zbioru D brak tolerancji odrzucił od $31%$ do aż $100%$ punktów faktycznie leżących na prostej z powodu drobnych błędów zaokrągleń rzędu $10^(-16)$. Dobór bezpiecznego progu $epsilon = 10^(-10)$ przywrócił pełną $100%$ poprawność klasyfikacji we wszystkich badanych metodach.
 
-4. *Adaptacyjny dobór tolerancji:*
-   Próg $epsilon$ nie powinien być stałą uniwersalną, lecz parametrem adaptacyjnym skalowanym proporcjonalnie do kwadratu maksymalnej współrzędnej wejściowej:
-   $ epsilon_"optymalne" approx C dot epsilon_"masz" dot (max(|x|, |y|))^2 $
+4. *Zależność tolerancji od rzędu wielkości danych:*
+   Próg tolerancji $epsilon$ nie może być jednakowy dla każdego zadania — powinien być dobierany w zależności od wielkości współrzędnych (dla liczb w zakresie do 1000 wystarcza $epsilon = 10^(-10)$, natomiast przy liczbach rzędu $10^(14)$ operacje wymagają zupełnie innej skali).
 
-5. *Efektywność obliczeniowa implementacji:*
-   Autorska arytmetyka skalarna zaimplementowana w Pythonie okazała się niemal 4-krotnie szybsza niż wywoływanie procedury `np.linalg.det` w pętli `for`. W profesjonalnych silnikach CAD/GIS predykaty geometryczne powinny być implementowane bezpośrednio lub wektoryzowane tablicowo.
+5. *Szybkość obliczeń:*
+   Własna, prosta funkcja licząca wyznacznik ze wzoru arytmetycznego okazała się niemal 4 razy szybsza niż gotowa funkcja `np.linalg.det` wywoływana w pętli. Wynika to z faktu, że wywoływanie biblioteki w pętli dla każdego punktu z osobna wiąże się z dużym narzutem czasowym Pythona.
