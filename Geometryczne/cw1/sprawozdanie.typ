@@ -278,10 +278,10 @@ W Zbiorze B ($10^5$ punktów o współrzędnych rzędu $10^(14)$) pojawia się p
 // ==========================================
 // STRONA 7: ZBIÓR D (PUNKTY WSPÓŁLINIOWE)
 // ==========================================
-== 4.5. Zbiór D: Błędy klasyfikacji na punktach współliniowych
-W Zbiorze D każdy z $1000$ punktów leży matematycznie dokładnie na prostej $A B$. Prawidłowy wynik w idealnej arytmetyce to wyłącznie etykieta "Na prostej".
+== 4.5. Zbiór D: Błędy klasyfikacji na punktach współliniowych (wersja kierunkowa)
+W Zbiorze D każdy z $1000$ punktów leży matematycznie dokładnie na prostej $A B$. Poniższa Tabela 3 przedstawia wyniki dla zbioru generowanego równaniem kierunkowym ($y = 0.05x + 0.05$). W idealnej arytmetyce prawidłowy wynik to wyłącznie etykieta "Na prostej".
 
-#v(8pt)
+#v(4pt)
 #align(center)[
 #table(
   columns: (0.8fr, 1.4fr, 1.1fr, 1.1fr, 1.1fr, 1.1fr, 1.2fr),
@@ -306,15 +306,16 @@ W Zbiorze D każdy z $1000$ punktów leży matematycznie dokładnie na prostej $
   [(III)], [numpy_2x2], [float32], [0.0], [513], [487], [*0*],
   table.hline(stroke: 1.2pt)
 )
-#v(2pt)
-#text(size: 8.5pt, style: "italic")[Tabela 3: Wyniki kategoryzacji punktów Zbioru D z podziałem na warianty analityczne (I, II, III).]
+#v(1pt)
+#text(size: 8pt, style: "italic")[Tabela 3: Wyniki kategoryzacji punktów Zbioru D (równanie kierunkowe) z podziałem na warianty analityczne.]
 ]
 
-#v(10pt)
+#v(4pt)
 *Szczegółowa analiza wyników Zbioru D (odniesienie do części tabeli):*
-- *(I) Brak tolerancji ($epsilon = 0.0$):* Komputer uznaje za współliniowe zaledwie część punktów: 688 w metodzie `custom_2x2`, 417 w `custom_3x3` oraz zaledwie 0--2 punktów w funkcjach biblioteki NumPy. Wynika to z faktu, że współczynnik prostej $0.05$ jest ułamkiem nieskończonym w systemie dwójkowym, co generuje reszty rzędu $10^(-16)$. Porównanie wyników punkt po punkcie między `custom_3x3` a `custom_2x2` wykazuje aż *677 sprzecznych decyzji* (dla 677 punktów z 1000 algorytmy wskazały inną stronę, np. jedna metoda uznała punkt za współliniowy, a druga za leżący po lewej lub prawej stronie, co wynika z odmiennej kolejności działań arytmetycznych).
+- *(I) Brak tolerancji ($epsilon = 0.0$):* Komputer uznaje za współliniowe zaledwie część punktów: 688 w metodzie `custom_2x2`, 417 w `custom_3x3` oraz zaledwie 0--2 punktów w funkcjach biblioteki NumPy. Wynika to z faktu, że współczynnik prostej $0.05$ jest ułamkiem nieskończonym w systemie dwójkowym, co wprowadza względne błędy zaokrąglenia współrzędnych rzędu $10^(-16)$. W wyznaczniku dają one $|D|$ rzędu $10^(-15)$ ($3 times 3$) i $10^(-12)$–$10^(-11)$ ($2 times 2$). Porównanie wyników punkt po punkcie między `custom_3x3` a `custom_2x2` wykazuje aż *677 sprzecznych decyzji* (dla 677 punktów z 1000 algorytmy wskazały inną stronę, np. jedna metoda uznała punkt za współliniowy, a druga za leżący po lewej lub prawej stronie, co wynika z odmiennej kolejności działań arytmetycznych).
 - *(II) Działanie progu tolerancji ($epsilon > 0$):* Wprowadzenie progu $epsilon = 10^(-10)$ całkowicie niweluje wpływ drobnych błędów zaokrągleń komputera, przywracając $100%$ poprawnych orzeczeń (dokładnie $1000$ punktów na prostej) dla wszystkich badanych algorytmów w precyzji `float64`.
-- *(III) Wpływ pojedynczej precyzji `float32`:* Format 32-bitowy dysponuje zaledwie 24 bitami mantysy (ok. 7 cyfr dziesiętnych znaczących). Dla współrzędnych z przedziału $[-1000, 1000]$ odstęp między sąsiednimi liczbami maszynowymi jest znacznie większy niż w podwójnej precyzji. W funkcjach biblioteki NumPy drobne zaburzenia numeryczne sprawiają, że wyznacznik nigdy nie osiąga idealnego zera — bez tolerancji ($epsilon = 0.0$) zbiór zostaje niemal symetrycznie podzielony na stronę lewą i prawą (ok. 50% lewo, 50% prawo: 489/511 i 513/487), dając *0 punktów na prostej*. Metody autorskie `custom_2x2` (662) oraz `custom_3x3` (387) wykazują częściowe orzeczenia zerowe, ponieważ bezpośrednie odejmowanie częściej generuje identyczne bity w rejestrach, które po odjęciu dają dokładnie $0.0$. Ponadto w `float32` próg $epsilon = 10^(-10)$ jest bezużyteczny (leży poniżej rozdzielczości typu) — aby skompensować błędy zaokrągleń, wymagany byłby znacznie większy próg ($epsilon >= 10^(-4)$).
+- *(III) Wpływ pojedynczej precyzji `float32`:* Format 32-bitowy dysponuje zaledwie 24 bitami mantysy (ok. 7 cyfr dziesiętnych). Dla współrzędnych z przedziału $[-1000, 1000]$ krok siatki jest zbyt duży. W bibliotece NumPy wyznacznik nigdy nie osiąga idealnego zera — bez tolerancji zbiór zostaje podzielony niemal po połowie na lewo i prawo (489/511 i 513/487), dając *0 punktów na prostej*. Metody autorskie `custom_2x2` (662) oraz `custom_3x3` (387) wykazują częściowe orzeczenia zerowe, gdyż odejmowanie częściej daje identyczne bity w rejestrach. W `float32` żaden badany próg ($epsilon <= 10^(-6)$) nie daje pełnej poprawności (najlepiej: 670 punktów, `custom_2x2`). Maksymalne $|D|$ to ok. $7.6 dot 10^(-6)$ ($3 times 3$) i $3.9 dot 10^(-3)$ ($2 times 2$), więc potrzebne byłyby progi rzędu $10^(-5)$ i $10^(-2)$.
+- *(IV) Wpływ postaci równania (wersja kierunkowa vs parametryczna):* Postać równania wpływa na błędy numeryczne przy braku tolerancji ($epsilon = 0.0$): w równaniu kierunkowym operacja $y = 0.05x + 0.05$ wprowadza błąd zaokrąglenia już podczas generowania współrzędnych ($0.05 = 1/20$ to ułamek okresowy w systemie dwójkowym). W wersji parametrycznej ($x = -1 + 2t, y = 0.1t$) mnożenie przez 2 jest dokładne binarnie, a $y$ nie wymaga dodawania wyrazu wolnego. W rezultacie przy $epsilon = 0.0$ metoda `custom_3x3` zakwalifikowała 417 punktów w wersji kierunkowej wobec 325 w parametrycznej, a `custom_2x2` — 688 wobec 678. Po włączeniu bezpiecznego progu ($epsilon >= 10^(-10)$) oba warianty dają jednak identyczny wynik: $1000$ punktów na prostej ($100%$).
 
 #pagebreak()
 
@@ -322,7 +323,7 @@ W Zbiorze D każdy z $1000$ punktów leży matematycznie dokładnie na prostej $
 // STRONA 8: BENCHMARK WYDAJNOŚCIOWY
 // ==========================================
 == 4.6. Porównanie efektywności czasowej (Benchmark)
-Przeprowadzono pomiar czasu klasyfikacji za pomocą `time.perf_counter()` dla rozmiarów próby $N in {1_000, 10_000, 50_000, 100_000}$.
+Przeprowadzono pomiar czasu klasyfikacji za pomocą `time.perf_counter()` dla rozmiarów próby $N in {1 thin 000, 10 thin 000, 50 thin 000, 100 thin 000}$.
 
 #v(6pt)
 #align(center)[
@@ -340,10 +341,10 @@ Przeprowadzono pomiar czasu klasyfikacji za pomocą `time.perf_counter()` dla ro
   table.hline(stroke: 1.2pt),
   [*Rozmiar próby $N$*], [*custom_2x2*], [*custom_3x3*], [*numpy_2x2*], [*numpy_3x3*],
   table.hline(stroke: 0.6pt),
-  [1_000], [0.49 ms], [0.56 ms], [1.83 ms], [1.91 ms],
-  [10_000], [4.84 ms], [5.65 ms], [18.19 ms], [18.84 ms],
-  [50_000], [23.91 ms], [26.96 ms], [88.12 ms], [91.88 ms],
-  [100_000], [48.52 ms], [55.41 ms], [179.15 ms], [186.06 ms],
+  [1 000], [0.49 ms], [0.56 ms], [1.83 ms], [1.91 ms],
+  [10 000], [4.84 ms], [5.65 ms], [18.19 ms], [18.84 ms],
+  [50 000], [23.91 ms], [26.96 ms], [88.12 ms], [91.88 ms],
+  [100 000], [48.52 ms], [55.41 ms], [179.15 ms], [186.06 ms],
   table.hline(stroke: 1.2pt)
 )
 #v(2pt)
@@ -351,7 +352,7 @@ Przeprowadzono pomiar czasu klasyfikacji za pomocą `time.perf_counter()` dla ro
 ]
 
 *Wnioski z analizy wydajnościowej:*
-1. Implementacje autorskie (`custom_*`) okazały się *3.4–3.8 raza szybsze* od wywołań biblioteki NumPy w pętli. Dla $100_000$ punktów `custom_2x2` wykonuje się w $48.5$ ms, podczas gdy `numpy_3x3` wymaga $186.1$ ms.
+1. Implementacje autorskie (`custom_*`) okazały się *3.4–3.8 raza szybsze* od wywołań biblioteki NumPy w pętli. Dla 100 000 punktów `custom_2x2` wykonuje się w $48.5$ ms, podczas gdy `numpy_3x3` wymaga $186.1$ ms.
 2. Narzut NumPy wynika z wywoływania funkcji w pętli `for` interpretera Pythona — koszt alokacji obiektów macierzy przewyższa czas samej dekompozycji.
 3. Wszystkie metody wykazują stabilną złożoność liniową $O(N)$.
 
@@ -368,13 +369,13 @@ Na podstawie przeprowadzonych eksperymentów sformułowano następujące wnioski
    Pojedyncza precyzja (ok. 7 cyfr znaczących) nie nadaje się do obliczeń geometrycznych przy dużych współrzędnych ($>= 10^7$). Dochodzi wtedy do utraty cyfr znaczących przy odejmowaniu dużych liczb od siebie — małe współrzędne prostej są całkowicie „pochłaniane” przez duże liczby punktu, co skutkuje masowym orzekaniem fałszywej współliniowości (aż $100%$ błędu w Zbiorze B).
 
 2. *Porównanie formuły różnicowej $2 times 2$ z formułą pełną $3 times 3$:*
-   W zakresie współrzędnych (Zbiór D, od -1000 do 1000) wzór $2 times 2$ jest dokładniejszy dzięki wstępnemu odejmowaniu współrzędnych, co zapobiega powstawaniu wielkich iloczynów (688 punktów na prostej bez tolerancji wobec 417 dla metody 3x3). Jednak w przypadku skrajnych liczb ($10^(14)$), odejmowanie to potrafi zgubić nachylenie prostej, jeśli wektor bazowy nie zostanie odpowiednio dopasowany do rzędu wielkości punktów.
+   W Zbiorze D (współrzędne od -1000 do 1000) wzór $2 times 2$ częściej daje wynik dokładnie równy zeru (688 punktów na prostej bez tolerancji wobec 417 dla metody $3 times 3$), jednak jego pozostałe błędy są znacznie większe: maksymalne $|D|$ to ok. $7 dot 10^(-12)$ wobec ok. $7 dot 10^(-15)$ dla $3 times 3$. Dlatego `custom_3x3` osiąga pełną poprawność już przy $epsilon = 10^(-14)$, a `custom_2x2` dopiero przy $epsilon = 10^(-10)$. Przyczyną jest to, że punkty bazowe $A$, $B$ leżą blisko początku układu, więc w formule $3 times 3$ mnożone są małe liczby, a w formule $2 times 2$ — różnice rzędu wielkości punktu $C$. Jednak w przypadku skrajnych liczb ($10^(14)$), odejmowanie to potrafi zgubić nachylenie prostej, jeśli wektor bazowy nie zostanie odpowiednio dopasowany do rzędu wielkości punktów.
 
 3. *Konieczność stosowania progu tolerancji $epsilon$:*
-   Sprawdzanie idealnego zera ($D == 0.0$) w komputerze prowadzi w praktyce do błędnych wniosków. Dla Zbioru D brak tolerancji odrzucił od $31%$ do aż $100%$ punktów faktycznie leżących na prostej z powodu drobnych błędów zaokrągleń rzędu $10^(-16)$. Dobór bezpiecznego progu $epsilon = 10^(-10)$ przywrócił pełną $100%$ poprawność klasyfikacji we wszystkich badanych metodach.
+   Sprawdzanie idealnego zera ($D == 0.0$) w komputerze prowadzi w praktyce do błędnych wniosków. Dla Zbioru D brak tolerancji odrzucił od $31%$ do aż $100%$ punktów faktycznie leżących na prostej z powodu błędów zaokrągleń (rzędu $10^(-15)$–$10^(-11)$ w wartości wyznacznika). Dobór bezpiecznego progu $epsilon = 10^(-10)$ przywrócił pełną $100%$ poprawność klasyfikacji we wszystkich badanych metodach w precyzji `float64`; w `float32` żaden badany próg nie był wystarczający.
 
 4. *Zależność tolerancji od rzędu wielkości danych:*
    Próg tolerancji $epsilon$ nie może być jednakowy dla każdego zadania — powinien być dobierany w zależności od wielkości współrzędnych (dla liczb w zakresie do 1000 wystarcza $epsilon = 10^(-10)$, natomiast przy liczbach rzędu $10^(14)$ operacje wymagają zupełnie innej skali).
 
 5. *Szybkość obliczeń:*
-   Własna, prosta funkcja licząca wyznacznik ze wzoru arytmetycznego okazała się niemal 4 razy szybsza niż gotowa funkcja `np.linalg.det` wywoływana w pętli. Wynika to z faktu, że wywoływanie biblioteki w pętli dla każdego punktu z osobna wiąże się z dużym narzutem czasowym Pythona.
+   Własna, prosta funkcja licząca wyznacznik ze wzoru arytmetycznego okazała się niemal 4 razy szybsza niż gotowa funkcja `np.linalg.det` wywoływana w pętli. Wynika to z faktu, że wywoływanie biblioteki w pętli dla każdego punktu z osobna wiąże się z dużym narzutem czasowym Pythona. Nie świadczy to o powolności samej biblioteki NumPy — obliczenie wzoru $2 times 2$ w postaci wektorowej, na całych tablicach naraz, byłoby szybsze od obu wariantów z pętlą.
